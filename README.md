@@ -20,3 +20,8 @@ https://s3.amazonaws.com/aws-website-sketchdata-zhrth/index.html
   * need to figure this out or we can't proceed with CNN
 4. Resolve issues with Vectorization of Bitmap
   * is it possible to train neural net to do this? we probably have enough data
+
+### survey todo (2/26/18)
+1. set up form to collect survey results
+2. set up questions
+3. set up M Turk
