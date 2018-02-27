@@ -28,7 +28,25 @@ function load_svg(path) {
   container.appendChild(svg);
 }
 
-let image_index = 0;
+let image_index = -1;
+
+/**
+ * load_next
+ * ---------
+ * button onclick function to load the next image
+ */
+function load_prev() {
+  if (image_index == 0) {
+    console.log('no previous images');
+    return;
+  }
+
+  image_index--;
+  console.log('image '+(image_index+1)+' out of '+image_paths.length);
+
+  load_svg(image_paths[image_index]);
+}
+
 
 /**
  * load_next
@@ -36,15 +54,14 @@ let image_index = 0;
  * button onclick function to load the next image
  */
 function load_next() {
-  console.log('image '+(image_index+1)+' out of '+image_paths.length);
-
-  if (image_index > image_paths.length - 1) {
+  if (image_index == image_paths.length - 1) {
     console.log('no more images');
     return;
   }
 
-  load_svg(image_paths[image_index]);
   image_index++;
+  console.log('image '+(image_index+1)+' out of '+image_paths.length);
+  load_svg(image_paths[image_index]);
 }
 
 /**
