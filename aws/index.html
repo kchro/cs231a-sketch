@@ -2,12 +2,21 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
   <body>
     <div class="container">
+      <div class="header">
+        Guitar Sketch Classification Survey
+      </div>
+
       <div id="svgContainer">
         <!-- load the svg here -->
       </div>
@@ -16,9 +25,17 @@
 
       </form>
 
+      <div class="header">
+        Task 1: Identify the guitar strings
+      </div>
+      <div class="desc">
+        Please identify the guitar strings. Click on the strokes to highlight them.
+      </div>
+
       <div class="button-container">
-        <button type="button" name="button" onclick="load_prev()"><<</button>
-        <button type="button" name="button" onclick="load_next()">>></button>
+        <button class="btn btn-default" type="button" name="button" onclick="load_prev()"><<</button>
+        <div id="console"></div>
+        <button class="btn btn-default" type="button" name="button" onclick="load_next()">>></button>
       </div>
     </div>
 
