@@ -51,7 +51,6 @@ function load_prev() {
   load_svg(image_paths[image_index]);
 }
 
-
 /**
  * load_next
  * ---------
@@ -69,6 +68,29 @@ function load_next() {
 }
 
 /**
+ * highlight svg
+ */
+$('#svgContainer').on('click', 'path', function() {
+  if (this.highlight === undefined) {
+    this.highlight = true;
+  } else {
+    this.highlight = !this.highlight;
+  }
+
+  this.style.stroke = (this.highlight) ? 'red' : 'black';
+});
+// }); .css('stroke', 'red').hover(
+//   function() {
+//     $(this).css('background-color', 'blue');
+//   },
+//   function() {
+//     $(this).css('background-color', 'blue');
+//   }
+// );
+
+/**
  * main
  */
-load_next();
+$(function() {
+  load_next();
+});
