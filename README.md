@@ -12,15 +12,14 @@ take a bitmap image and convert it to stroke-based svg
 given a window, classify it as a eye, nose, or a mouth
 
 3) *Windowing*
-slide a window over a face image to do the classification.
-create bounding boxes over the image where we expect a
+slide a window over a face image to do the classification. create bounding boxes over the image where we expect a
 feature.
 
-4) Detection
+4) *Detection*
 eliminate unnecessary bounding boxes (non-maximal suppression)
 
-5) Mapping to SVG
+5) *Mapping to SVG*
 identify the corresponding SVG components to animate
 
-6) Animation
+6) *Animation*
 animate the SVG components as they are classified:
