@@ -20,7 +20,7 @@ take a bitmap image and convert it to stroke-based svg
 2) *Classifier for Features*
 given a window, classify it as a eye, nose, or a mouth
 
-3) *Windowing*
+3) *Windowing*
 slide a window over a face image to do the classification. create bounding boxes over the image where we expect a feature.
 
 4) *Detection*
