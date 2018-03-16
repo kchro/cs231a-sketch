@@ -57,8 +57,8 @@ if __name__ == "__main__":
         im = cv2.imread(face, 0)
         cv2.imshow('image', im)
         cv2.waitKey(0)
-
-        raise
+        
+        continue
 
         # slide a window over the face and get bounding boxes
         bboxes = get_bounding_boxes(im)
