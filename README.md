@@ -3,6 +3,15 @@ CS231A Project (Gary Yu, Cynthia Hua, Jeff Hara)
 
 ## todo
 
+### jeff:
+I added files to generate the faces in case that's useful.
+
+```
+mkdir faces
+chmod +x download_faces.sh
+./download_faces.sh
+```
+
 ## pipeline
 
 1) *Bitmap to SVG*
@@ -12,8 +21,7 @@ take a bitmap image and convert it to stroke-based svg
 given a window, classify it as a eye, nose, or a mouth
 
 3) *Windowing*
-slide a window over a face image to do the classification. create bounding boxes over the image where we expect a
-feature.
+slide a window over a face image to do the classification. create bounding boxes over the image where we expect a feature.
 
 4) *Detection*
 eliminate unnecessary bounding boxes (non-maximal suppression)
