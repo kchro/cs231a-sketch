@@ -1,27 +1,26 @@
 # cs231a-sketch
 CS231A Project (Gary Yu, Cynthia Hua, Jeff Hara)
 
-## progress (2/24/18)
-http://stanford.edu/~jhara18/index.html
-* for now, I'm serving up a few .svg files and you can see how we can dynamically load SVG images and use JS and CSS to manipulate them.
+## todo
 
-## progress (2/25/18)
-https://s3.amazonaws.com/aws-website-sketchdata-zhrth/index.html
-* I'm hosting the survey website on AWS (free up to 5GB)
-* We can make changes to the directory aws/ and I can upload them as a .zip file or manage files individually so we can develop the survey collectively.
+## pipeline
 
-## todo (2/24/18)
-1. Set up Mechanical Turk
-  * ~Decide where we want to serve files? I don't actually know how MT works.~
-  * Decide format / design of survey
-2. Set up CNN and harness
-  * will post code I have (jeff)
-3. Decide on animation
-  * need to figure this out or we can't proceed with CNN
-4. Resolve issues with Vectorization of Bitmap
-  * is it possible to train neural net to do this? we probably have enough data
+1) *Bitmap to SVG*
+take a bitmap image and convert it to stroke-based svg
 
-### survey todo (2/26/18)
-1. set up form to collect survey results
-2. set up questions
-3. set up M Turk
+2) *Classifier for Features*
+given a window, classify it as a eye, nose, or a mouth
+
+3) *Windowing*
+slide a window over a face image to do the classification.
+create bounding boxes over the image where we expect a
+feature.
+
+4) Detection
+eliminate unnecessary bounding boxes (non-maximal suppression)
+
+5) Mapping to SVG
+identify the corresponding SVG components to animate
+
+6) Animation
+animate the SVG components as they are classified:
