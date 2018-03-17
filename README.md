@@ -17,17 +17,21 @@ chmod +x download_faces.sh
 1) *Bitmap to SVG*
 take a bitmap image and convert it to stroke-based svg
 
-2) *Classifier for Features*
+2) ~~Classifier for Features~~
 given a window, classify it as a eye, nose, or a mouth
+current neural network model classifies with 98-99% accuracy
 
-3) *Windowing*
+3a) *Windowing*
 slide a window over a face image to do the classification. create bounding boxes over the image where we expect a feature.
+
+3b) *Contouring*
+another method of finding the bounding boxes is to identify contours and place bounding boxes around them
 
 4) *Detection*
 eliminate unnecessary bounding boxes (non-maximal suppression)
 
-5) *Mapping to SVG*
-identify the corresponding SVG components to animate
+5) *Convert the window to 3-stroke-format*
+convert to SVG lines, then to 3-stroke-format
 
 6) *Animation*
 animate the SVG components as they are classified:
