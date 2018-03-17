@@ -6,15 +6,29 @@ import matplotlib.pyplot as plt
 from face_data import load_faces
 
 def lines_to_strokes(lines):
+    """
+    mostly taken the SketchRNN source code
+    main difference is formatting of lines parameter
+
+    params:
+        lines       an array of lines, where each line
+                    is a (2 x n) matrix of x, y pairs
+
+    returns:
+        strokes     an array of (dx, dy, eos) for all
+                    the paths in lines
+    """
     strokes = [[0,0,0]]
 
     # each line is (2 x n)
     for line in lines:
         n = len(line[0])
+
         # for each xy coordinate pair, append
         for i in range(n):
             eos = 0 if i < n-1 else 1
             strokes.append([line[0][i], line[1][i], eos])
+
     strokes = np.array(strokes)
 
     # calculate the delta
@@ -22,6 +36,20 @@ def lines_to_strokes(lines):
     return strokes[1:, :]
 
 def convert_to_3_stroke(im):
+    """
+    params:
+        im          image
+
+    method:
+        1)  dilate and erode the image to
+            group line segments together
+        2)  convert to bitmap
+        3)  trace bitmap to SVG
+        4)  convert SVG to 3-stroke format
+
+    returns:
+        strokes     3-stroke format
+    """
     # black background, white sketch
     _, thresh = cv2.threshold(im, 200, 255, cv2.THRESH_BINARY_INV)
 
