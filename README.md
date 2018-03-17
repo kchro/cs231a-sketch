@@ -12,6 +12,8 @@ chmod +x download_faces.sh
 ./download_faces.sh
 ```
 
+working on the conversion from bitmap to SVG to 3-stroke...
+
 ## pipeline
 
 1) *Bitmap to SVG*
