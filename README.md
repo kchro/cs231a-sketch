@@ -12,7 +12,16 @@ chmod +x download_faces.sh
 ./download_faces.sh
 ```
 
-working on the conversion from bitmap to SVG to 3-stroke...
+install potrace
+```
+brew install libagg pkg-config potrace
+git clone https://github.com/flupke/pypotrace.git
+cd pypotrace
+pip install -r requirements.txt
+pip install .
+```
+
+
 
 ## pipeline
 
@@ -32,8 +41,9 @@ another method of finding the bounding boxes is to identify contours and place b
 4) *Detection*
 eliminate unnecessary bounding boxes (non-maximal suppression)
 
-5) *Convert the window to 3-stroke-format*
+5) ~~Convert the window to 3-stroke-format~~
 convert to SVG lines, then to 3-stroke-format
+still have to do testing to make sure it works properly
 
 6) *Animation*
 animate the SVG components as they are classified:
