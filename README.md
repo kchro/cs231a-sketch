@@ -55,11 +55,17 @@ still have to do testing to make sure it works properly
 animate the SVG components as they are classified:
 
 PRESENTATION TO DO
+
 diagram/chart of prediction numbers (I haven't totally analyzed what they mean, or how far they range)
+
 neural net diagrams
+
 classifier error analysis: make a diagram of high score classifications with varying stroke styles
+
 contouring success chart
+
 windowing success chart
+
 animation
 
 FINAL PAPER TO DO
