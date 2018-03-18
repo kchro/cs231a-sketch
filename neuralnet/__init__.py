@@ -1,0 +1,29 @@
+import sys
+sys.path.insert(0, 'neuralnet/')
+
+from sketch_rnn_class import *
+from model_class import Model
+
+#load pathways
+data_dir = 'neuralnet/datasets/'
+models_root_dir = 'neuralnet/' #same directory we're in now
+model_dir = 'neuralnet/checkpoint_path/classifier'
+
+def load_trained_classifier():
+    print 'loading datasets...'
+    _, _, _, _, eval_hps_model, _ = load_env(data_dir, model_dir)
+    print 'loaded datasets.'
+    
+    # construct the sketch-rnn model:
+    reset_graph()
+    eval_model = Model(eval_hps_model, reuse=True)
+    
+    # run session
+    sess = tf.InteractiveSession()
+    sess.run(tf.global_variables_initializer())
+    
+    # load checkpoints
+    load_checkpoint(sess, model_dir)
+    
+    # return session and evaluation model
+    return sess, eval_model
