@@ -6,6 +6,13 @@ from face_data import load_faces
 from plotting import plot_img_with_bbox
 
 def get_bounding_boxes(im, window_size=100, shift_size=50, thresh=0.3):
+    """
+    params:
+        im              image (256x256)
+        window_size     size of bounding box
+        shift_size      size of window shift
+        thresh          minimum confidence
+    """
     H, W = im.shape
     bboxes = {}
 
@@ -57,7 +64,7 @@ if __name__ == "__main__":
         im = cv2.imread(face, 0)
         cv2.imshow('image', im)
         cv2.waitKey(0)
-        
+
         continue
 
         # slide a window over the face and get bounding boxes
