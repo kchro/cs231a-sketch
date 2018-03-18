@@ -3,6 +3,7 @@ np.set_printoptions(linewidth=np.nan, precision=3)
 import cv2
 import potrace
 import matplotlib.pyplot as plt
+from rdp import rdp
 from face_data import load_faces
 
 def lines_to_strokes(lines):
@@ -22,12 +23,12 @@ def lines_to_strokes(lines):
 
     # each line is (2 x n)
     for line in lines:
-        n = len(line[0])
+        n = len(line)
 
         # for each xy coordinate pair, append
         for i in range(n):
             eos = 0 if i < n-1 else 1
-            strokes.append([line[0][i], line[1][i], eos])
+            strokes.append([line[i][0], line[i][1], eos])
 
     strokes = np.array(strokes)
 
@@ -66,30 +67,25 @@ def convert_to_3_stroke(im):
     path = bmp.trace()
 
     # get the xy coordinates for each curve
-    lines = [curve.tesselate().T for curve in path]
+    lines = []
+    for i, curve in enumerate(path):
+        # for some reason, the first curve
+        # is always weird
+        if i == 0:
+            continue
+
+        line = curve.tesselate()
+        # perform Ramer-Douglas-Peuker algorithm
+        line = rdp(line, epsilon=2)
+
+        lines.append(line)
 
     # get the 3 stroke format
-    strokes = lines_to_strokes(lines[1:])
+    strokes = lines_to_strokes(lines)
 
     return strokes
 
 if __name__ == '__main__':
     for face in load_faces(n=10):
         im = cv2.imread(face, 0)
-        # black background, white sketch
-        _, thresh = cv2.threshold(im, 200, 255, cv2.THRESH_BINARY_INV)
-        kernel = np.ones((3,3), np.uint8)
-        im = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-
-        # Get inverted boolean matrix:
-        # 1 if black, 0 if white
-        data = im == 0
-
-        # Create a bitmap from the array
-        bmp = potrace.Bitmap(data)
-        path = bmp.trace()
-
-        lines = [curve.tesselate().T for curve in path]
-
-        strokes = lines_to_strokes(lines[1:])
-        print strokes
+        strokes = convert_to_3_stroke(im)
