@@ -19,15 +19,13 @@ pip install -r requirements.txt
 pip install .
 ```
 
-
-
 ## pipeline (TO DO LIST)
 
-### *Bitmap to SVG*
+### ~~Bitmap to SVG~~
 - see **svg_conversion.ipynb**
 - ~~take a bitmap image and convert it to stroke-based svg~~
 - ~~apply RDP simplification~~
-- apply normalization (use 46.5 for 256 size images)
+- ~~apply normalization (use 46.5 for 256 size images)~~
 
 ### ~~Classifier for Features~~
 - see **neuralnet/demo.ipynb**
