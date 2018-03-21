@@ -3,6 +3,7 @@ sys.path.insert(0, 'neuralnet/')
 
 from sketch_rnn_class import *
 from model_class import Model
+from svg_util import *
 
 #load pathways
 data_dir = 'neuralnet/datasets/'
@@ -10,10 +11,6 @@ models_root_dir = '' #same directory we're in now
 model_dir = 'four_class_checkpoint/'
 
 def load_trained_classifier():
-    # print 'loading datasets...'
-    # _, _, test_set, _, eval_hps_model, _ = load_env(data_dir, model_dir)
-    # print 'loaded datasets.'
-
     _, eval_hps_model, _ = load_model(model_dir)
 
     # construct the sketch-rnn model:
@@ -29,3 +26,29 @@ def load_trained_classifier():
 
     # return session and evaluation model
     return sess, eval_model
+
+class FeatureClassifier:
+    def __init__(self, thresh=0):
+        sess, eval_model = load_trained_classifier()
+        self.sess = sess
+        self.model = eval_model
+        self.labels = ['ear', 'eye', 'mouth', 'nose']
+        self.thresh = thresh
+
+    def predict(self, stroke, verbose=False):
+        dist = pred(self.sess, self.model, stroke, 125)[0]
+        if verbose:
+            print dist
+        ind = predict_model(self.sess, self.model, stroke, 125)
+        label = self.labels[ind]
+        confidence = dist[ind]
+
+        if confidence < self.thresh:
+            return None, confidence
+        if label == 'ear':
+            return None, confidence
+
+        return label, confidence
+
+    def draw(self, stroke):
+        draw_strokes(stroke)
