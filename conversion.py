@@ -135,7 +135,10 @@ def get_opt_path(points):
 
     return best_order
 
-def get_window_3_stroke(im, j, i, window_shape=(100,100), show=False):
+def get_window_3_stroke(im, j, i,
+                        window_shape=(100,100),
+                        scale_factor=10,
+                        show=False):
     """
     a windowed function for the 3-stroke conversion
 
@@ -144,6 +147,8 @@ def get_window_3_stroke(im, j, i, window_shape=(100,100), show=False):
         im              image
         j, i            window coordinates
         window_shape    window dimensions (H, W)
+        scale_factor    scale the strokes
+        show            display the image and path
 
     method:
     - use Guo-Hall thinning to reduce to a skeleton
@@ -196,6 +201,12 @@ def get_window_3_stroke(im, j, i, window_shape=(100,100), show=False):
         plt.show()
 
     strokes = lines_to_strokes(lines)
+
+    # normalize strokes
+    if len(strokes) > 0:
+        stroke[:,0:2] /= scale_factor
+        strokes[0] = [0, 0, 0]
+    
     return strokes
 
 if __name__ == '__main__':
