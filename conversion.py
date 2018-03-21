@@ -163,7 +163,7 @@ def get_window_3_stroke(im, j, i,
         strokes         pen-stroke format
     """
     # preprocess window with Guo-Hall thinning
-    window = im[j:j+window_shape[0], i:i+window_size[1]]
+    window = im[j:j+window_shape[0], i:i+window_shape[1]]
     _, th = cv2.threshold(window,127,255,cv2.THRESH_BINARY_INV)
     window = guo_hall_thinning(th)
 
@@ -204,9 +204,9 @@ def get_window_3_stroke(im, j, i,
 
     # normalize strokes
     if len(strokes) > 0:
-        stroke[:,0:2] /= scale_factor
+        strokes[:,0:2] /= scale_factor
         strokes[0] = [0, 0, 0]
-    
+
     return strokes
 
 if __name__ == '__main__':
