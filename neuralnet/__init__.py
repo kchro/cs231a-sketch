@@ -7,12 +7,14 @@ from model_class import Model
 #load pathways
 data_dir = 'neuralnet/datasets/'
 models_root_dir = '' #same directory we're in now
-model_dir = 'neuralnet/checkpoint_path/classifier'
+model_dir = 'four_class_checkpoint/'
 
 def load_trained_classifier():
-    print 'loading datasets...'
-    _, _, test_set, _, eval_hps_model, _ = load_env(data_dir, model_dir)
-    print 'loaded datasets.'
+    # print 'loading datasets...'
+    # _, _, test_set, _, eval_hps_model, _ = load_env(data_dir, model_dir)
+    # print 'loaded datasets.'
+
+    _, eval_hps_model, _ = load_model(model_dir)
 
     # construct the sketch-rnn model:
     reset_graph()
@@ -26,4 +28,4 @@ def load_trained_classifier():
     load_checkpoint(sess, model_dir)
 
     # return session and evaluation model
-    return sess, eval_model, test_set
+    return sess, eval_model
