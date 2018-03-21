@@ -5,6 +5,11 @@ import potrace
 import matplotlib.pyplot as plt
 from rdp import rdp
 from face_data import load_faces
+from thinning import guo_hall_thinning
+from sklearn.neighbors import NearestNeighbors
+from sklearn.cluster import DBSCAN
+import networkx as nx
+from tqdm import tqdm
 
 def lines_to_strokes(lines):
     """
@@ -36,7 +41,7 @@ def lines_to_strokes(lines):
     strokes[1:, 0:2] -= strokes[:-1, 0:2]
     return strokes[1:, :]
 
-def convert_to_3_stroke(im):
+def convert_to_3_stroke(im, eps=None):
     """
     params:
         im          image
@@ -66,7 +71,7 @@ def convert_to_3_stroke(im):
     bmp = potrace.Bitmap(data)
     path = bmp.trace()
 
-    plt.imshow(data, cmap=plt.cm.gray)
+    # plt.imshow(data, cmap=plt.cm.gray)
 
     # get the xy coordinates for each curve
     lines = []
@@ -79,7 +84,8 @@ def convert_to_3_stroke(im):
         line = curve.tesselate()
 
         # perform Ramer-Douglas-Peuker algorithm
-        line = rdp(line, epsilon=1)
+        if eps:
+            line = rdp(line, epsilon=eps)
 
         x, y = line.T
         plt.plot(x, y, c='red')
@@ -93,68 +99,110 @@ def convert_to_3_stroke(im):
 
     return strokes
 
-def get_curves(im, kernel_size=3):
+def get_opt_path(points):
     """
     params:
-        im          image
+        points      unordered list of [x, y] coordinates
+
+    method:
+    - create a cyclic neighbor-graph
+    - iterate over starting points to see where we can minimize distance
+
     returns:
-        lines       xy coordinates of lines
+        best_order  best order to read coordinates
     """
-    # black background, white sketch
-    _, thresh = cv2.threshold(im, 200, 255, cv2.THRESH_BINARY_INV)
+    # make a graph connecting points to nearest two nodes
+    clf = NearestNeighbors(2).fit(points)
+    G = clf.kneighbors_graph()
+    T = nx.from_scipy_sparse_matrix(G)
 
-    # dilate -> erode
-    kernel = np.ones((kernel_size,kernel_size), np.uint8)
-    im2 = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    # order nodes by shortest distance, starting from each point
+    paths = [list(nx.dfs_preorder_nodes(T, i)) for i in range(len(points))]
 
-    # Get inverted boolean matrix:
-    # potrace only works with boolean images
-    data = im2 == 0
+    best_order = None
+    best_length = 0
+    best_cost = float('inf')
 
-    # Create a bitmap from the array
-    bmp = potrace.Bitmap(data)
-    paths = bmp.trace()
+    # choose best path based on: min-distance and max-path-length
+    for path in paths:
+        ordered = points[path]
+        cost = (((ordered[:-1] - ordered[1:])**2).sum(1)).sum()
+
+        if cost < best_cost and len(ordered) >= best_length:
+            best_cost = cost
+            best_order = path
+            best_length = len(ordered)
+
+    return best_order
+
+def get_window_3_stroke(im, j, i, window_shape=(100,100), show=False):
+    """
+    a windowed function for the 3-stroke conversion
+
+    params:
+        lines           get_curves(im)
+        im              image
+        j, i            window coordinates
+        window_shape    window dimensions (H, W)
+
+    method:
+    - use Guo-Hall thinning to reduce to a skeleton
+    - get all non-zero points in skeleton
+    - use DBSCAN clustering to find clusters of neighbors
+        - interpret each cluster as a "stroke"
+    - use get_opt_path on each cluster to find best-fit line
+    - simplify best-fitting lines with Ramer-Douglas-Peuker algorithm
+    - convert lines to strokes
+
+    returns:
+        strokes         pen-stroke format
+    """
+    # preprocess window with Guo-Hall thinning
+    window = im[j:j+window_shape[0], i:i+window_size[1]]
+    _, th = cv2.threshold(window,127,255,cv2.THRESH_BINARY_INV)
+    window = guo_hall_thinning(th)
+
+    points = np.argwhere(window.T != 0)
+    # points = np.flip(points, 1)
+
+    if len(points) == 0:
+        return
+
+    # segment graph into clusters using DBSCAN algorithm
+    db = DBSCAN(eps=5)
+    labels = db.fit_predict(points)
 
     lines = []
-    for i, curve in enumerate(paths):
-        if i == 0:
+    if show:
+        plt.imshow(window, 'gray')
+    # for each cluster, get the optimal path
+    for label in set(labels):
+        cluster = points[labels==label]
+
+        if len(cluster) < 3:
             continue
-        line = curve.tesselate()
-        line = rdp(line, epsilon=1)
+
+        path = get_opt_path(cluster)
+        line = rdp(cluster[path], epsilon=2)
+
+        # line = cluster[path]
+        if show:
+            x, y = line.T
+            plt.plot(x, y)
+        # add line to lines
         lines.append(line)
 
-    return lines
+    if show:
+        plt.show()
 
-def get_window_3_stroke(lines, im, j, i, window_size=100):
-    # plt.imshow(im[j:j+window_size, i:i+window_size],
-    #            cmap=plt.cm.gray)
-
-    new_lines = []
-    for line in lines:
-        # print line
-
-        inbounds = []
-        for x, y in line:
-            if (x > i and x < i+window_size) and \
-               (y > j and y < j+window_size):
-
-               inbounds.append([x, y])
-        inbounds = np.array(inbounds)
-
-        if len(inbounds) > 0:
-            new_lines.append(inbounds)
-            # X, Y = inbounds.T
-            # plt.plot(X, Y, c='red')
-
-    # plt.show()
-
-    strokes = lines_to_strokes(new_lines)
+    strokes = lines_to_strokes(lines)
     return strokes
 
 if __name__ == '__main__':
     for face in load_faces(n=5):
         im = cv2.imread(face, 0)
         # strokes = convert_to_3_stroke(im)
-        lines = get_curves(im)
-        lines = get_window_3_stroke(lines, im, 0, 0)
+        # lines = get_curves(im)
+        lines = get_window_3_stroke(im, 0, 0)
+        raise
         # draw_strokes(strokes)
