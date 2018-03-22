@@ -126,7 +126,7 @@ class Model(object):
     use_output_dropout = self.hps.use_output_dropout
 
     if hps.conditional:  # vae mode:
-      if hps.enc_model == 'hyper':
+      if hps.enc_model == 'hyper': #we are using regular LSTMs
         self.enc_cell_fw = enc_cell_fn(
             hps.enc_rnn_size,
             use_recurrent_dropout=use_recurrent_dropout,
@@ -163,12 +163,14 @@ class Model(object):
     # Number of outputs is 3 (one logit per pen state) plus 6 per mixture
     # component: mean_x, stdev_x, mean_y, stdev_y, correlation_xy, and the
     # mixture weight/probability (Pi_k)
+    # we are generating classes instead of an image
     n_out = 4 #num_classes
 
     with tf.variable_scope('RNN'):
       output_w = tf.get_variable('output_w', [2*self.hps.enc_rnn_size, n_out])
       output_b = tf.get_variable('output_b', [n_out])
 
+    # decoder module of sketch-rnn is below
     output = tf.nn.xw_plus_b(self.batch_z, output_w, output_b)
     self.output = output
     if self.y_labels is not None:
