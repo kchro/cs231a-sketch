@@ -188,7 +188,7 @@ def get_window_3_stroke(im, j, i,
             continue
 
         path = get_opt_path(cluster)
-        line = rdp(cluster[path], epsilon=2)
+        line = rdp(cluster[path], epsilon=1)
 
         # line = cluster[path]
         if show:
